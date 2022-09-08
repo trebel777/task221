@@ -14,6 +14,11 @@ data class Post(
 
 object WallService {
     private var posts = emptyArray<Post>()
+    fun print () {
+        for (post in posts) {
+            print(post)
+        }
+    }
     fun clear() {
         posts = emptyArray()
     }
@@ -56,5 +61,7 @@ object WallService {
 
 
 fun main() {
-    val post = Post(1, 2, 3, 4, "text", true, "post", true, true, false)
+    WallService.add(Post(1, 2, 3, 4, "text", true, "post", true, true, false))
+    WallService.update(updatePost = Post(1,3, 4, 5, "text", true, "post", true, true, false))
+    WallService.print()
 }
