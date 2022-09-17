@@ -1,3 +1,5 @@
+import ru.netology.Attachments
+
 data class Post(
     var id: Int = 0,
     var ownerId: Int = 0,
@@ -8,7 +10,7 @@ data class Post(
     val replyOwnerId: Int? = null,
     val replyPostId: Int? = null,
     val friendsOnly: Boolean = true,
-    val comments: Comments? = null,
+    val comments: Comment? = null,
     val copyrights: Copyrights? = null,
     val likes: Likes? = null,
     val reposts: Reposts? = null,
@@ -64,12 +66,33 @@ data class Place(
 data class Views(
     var count: Int = 0
 )
-data class Comments(
-    var count: Int = 0,
-    val canPost: Boolean = true,
-    val groupsCanPost: Boolean = true,
-    val canClose: Boolean = true
+data class Comment(
+    val id: Int,
+    val fromId: Int,
+    val postId: Int,
+    val date: Int = System.currentTimeMillis().toInt(),
+    var text: String? = null,
+    val donut: Donut? = null,
+    var replyToUser: Int? = null,
+    var replyToComment: Int? = null,
+    var attachments: Array<Attachments>? = null,
+    var parentsStack: Array<Int>? = null,
+    var thread: CommentThread? = null
 )
+data class CommentThread(
+    var count: Int? = null,
+    var items: Array<Comment>? = null,
+    var canPost: Boolean? = null,
+    var showReplyButton: Boolean? = null,
+    var groupsCanPost: Boolean? = null
+)
+
+data class Donut(
+    val isDon: Boolean,
+    val placeholder: String
+)
+class PostNotFoundException(message: String) : RuntimeException(message)
+
 data class Copyrights(
     val id: Int = 0,
     val link: String = "",
@@ -79,10 +102,21 @@ data class Copyrights(
 
 object WallService {
     private var posts = emptyArray<Post>()
+    var comments = emptyArray<Comment>()
     fun print() {
         for (post in posts) {
             print(post)
         }
+    }
+    fun createComment(comment: Comment) {
+        for (post in posts){
+            if (post.id == comment.postId) {
+                comments += comment
+                return
+            }
+        }
+
+        throw PostNotFoundException("Пост с этим ID не найден")
     }
 
     fun clear() {
@@ -117,6 +151,7 @@ object WallService {
     }
 
 }
+
 
 
 fun main() {

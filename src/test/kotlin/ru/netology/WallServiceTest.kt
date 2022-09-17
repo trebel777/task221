@@ -1,6 +1,8 @@
 package ru.netology
 
+import Comment
 import Post
+import PostNotFoundException
 import WallService
 import junit.framework.TestCase.assertTrue
 import org.junit.Assert.assertFalse
@@ -40,5 +42,37 @@ class WallServiceTest {
         val result = service.update(update)
         assertFalse(result)
     }
+    @Test
+    fun commentCreated() {
+        val service = WallService
+
+        service.add( Post(id = 1) )
+        service.add( Post(id = 2) )
+        service.add( Post(id = 3) )
+
+
+        val comment: Comment = Comment(1, 15, 2)
+
+        service.createComment(comment)
+
+        // Assert
+        assertFalse(service.comments.isEmpty())
+    }
+
+    @Test(expected = PostNotFoundException::class)
+    fun createCommentException() {
+        val service = WallService
+
+
+        service.add( Post(id = 1) )
+        service.add( Post(id = 2) )
+        service.add( Post(id = 3) )
+
+        val comment: Comment = Comment(1, 15, 12)
+
+        service.createComment(comment)
+
+    }
+
 }
 
