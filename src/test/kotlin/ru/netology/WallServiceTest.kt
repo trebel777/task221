@@ -1,6 +1,8 @@
 package ru.netology
 
+import Comment
 import Post
+import PostNotFoundException
 import WallService
 import junit.framework.TestCase.assertTrue
 import org.junit.Assert.assertFalse
@@ -8,7 +10,7 @@ import org.junit.Before
 import org.junit.Test
 
 class WallServiceTest {
-    val post = Post(0, 0, 0, 0, "text", true, "post", true, true, true)
+
     @Before
     fun clearBeforeTest() {
         WallService.clear()
@@ -16,26 +18,61 @@ class WallServiceTest {
 
     @Test
     fun postAdd() {
-        val add = WallService.add(Post(1, 2, 3, 4, "text", false, "post", true, true, true))
+        val add = WallService.add(Post(1, 5))
         assertTrue(add.id > 0)
     }
 
     @Test
     fun updateExisting() {
         val service = WallService
-        service.add(Post(1, 2, 3, 4, "text", false, "post", true, true, true, 44))
-        val update = Post(1, 4, 7, 46, "notText", true, "video", false, false, false, 78)
+        service.add(Post(id = 1, ownerId = 2))
+        service.add(Post(id= 2,ownerId = 3))
+        service.add(Post(id = 3, ownerId = 22))
+        val update = Post(id = 3, ownerId = 20)
 
         val result = service.update(update)
         assertTrue(result)
     }
+
     @Test
-    fun updateUnExisting(){
+    fun updateUnExisting() {
         val service = WallService
-        service.add(Post(3,2,3,4,"text",false,"post", false, false, false,2))
-        val update = Post(78,1,1,1, "notText", true, "post", true, true,true)
+        service.add(Post(1))
+        val update = Post(78)
         val result = service.update(update)
         assertFalse(result)
     }
+    @Test
+    fun commentCreated() {
+        val service = WallService
+
+        service.add( Post(id = 1) )
+        service.add( Post(id = 2) )
+        service.add( Post(id = 3) )
+
+
+        val comment: Comment = Comment(1, 15, 2)
+
+        service.createComment(comment)
+
+        // Assert
+        assertFalse(service.comments.isEmpty())
+    }
+
+    @Test(expected = PostNotFoundException::class)
+    fun createCommentException() {
+        val service = WallService
+
+
+        service.add( Post(id = 1) )
+        service.add( Post(id = 2) )
+        service.add( Post(id = 3) )
+
+        val comment: Comment = Comment(1, 15, 12)
+
+        service.createComment(comment)
+
+    }
+
 }
 
